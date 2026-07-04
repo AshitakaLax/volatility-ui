@@ -8,7 +8,7 @@ import streamlit as st
 from websocket import create_connection, WebSocketTimeoutException, WebSocketConnectionClosedException
 from typing import List
 
-from src.models import DashboardStatePayload, DashboardLot
+from volatility_bridge.volatile_models import DashboardStatePayload, DashboardLot
 
 # Setup dashboard log targets
 logger = logging.getLogger("DashboardUI")
