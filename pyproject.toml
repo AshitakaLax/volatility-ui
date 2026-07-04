@@ -1,0 +1,14 @@
+[project]
+name = "volatility-ui"
+version = "0.1.0"
+description = "Streamlit UI for Volatility Harvester"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit>=1.35.0",
+    "pandas>=2.2.0",
+    "plotly>=5.22.0",
+    "pyyaml>=6.0.0",
+    "websocket-client>=1.8.0",
+    "pydantic>=2.0.0",
+]
