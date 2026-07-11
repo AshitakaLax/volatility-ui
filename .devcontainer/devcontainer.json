@@ -1,0 +1,29 @@
+{
+  "name": "AI Trading Agent Python Env",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      },
+      "extensions": [
+        "ms-python.python",
+        "saoudrizwan.claude-dev",
+        "Continue.continue"
+      ]
+    }
+  },
+  //TODO: Poststart command install alpaca-cli and alpaca bash completion requires Go
+  // https://github.com/alpacahq/cli
+  "postCreateCommand": "go install github.com/alpacahq/cli/cmd/alpaca@latest",
+  "remoteUser": "root",
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/go:1": {}
+  }
+}
