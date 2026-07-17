@@ -1,29 +1,30 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
-from datetime import datetime
+"""Compatibility exports for the shared volatility bridge models.
 
-class StrategySignal(BaseModel):
-    """The master signal returned by a Sizing Strategy to the OMS."""
-    execute_buy: bool
-    trade_value: float
-    grid_step: float
-    profit_target: float
+The canonical Pydantic contracts live in the ``volatility-bridge`` package.
+Keeping these re-exports lets existing ``src.models`` imports continue to work
+while ensuring this UI consumes the same schemas as the backend.
+"""
 
-class DashboardLot(BaseModel):
-    """Strictly typed schema for an active inventory lot."""
-    lot_id: str
-    buy_price: float
-    target_sell_price: float
-    shares: float
-    timestamp: Optional[datetime] = None
+from volatility_bridge.volatile_models import (
+    DashboardLot,
+    DashboardStatePayload,
+    SellInstruction,
+    StrategySignal,
+    UICommandEmergencyHalt,
+    UICommandLiquidateAll,
+    UICommandMessage,
+    UICommandResumeTrading,
+    UICommandUpdateConfig,
+)
 
-class DashboardStatePayload(BaseModel):
-    """The master data contract ensuring absolute UI and Backend parity."""
-    symbol: str
-    current_price: float
-    last_buy_price: float
-    grid_step: float
-    open_lots: List[DashboardLot] = Field(default_factory=list)
-    closed_lots_count: int
-    realized_profit: float
-    timestamp: datetime
+__all__ = [
+    "DashboardLot",
+    "DashboardStatePayload",
+    "SellInstruction",
+    "StrategySignal",
+    "UICommandEmergencyHalt",
+    "UICommandLiquidateAll",
+    "UICommandMessage",
+    "UICommandResumeTrading",
+    "UICommandUpdateConfig",
+]
