@@ -6,16 +6,23 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from websocket import create_connection, WebSocketTimeoutException, WebSocketConnectionClosedException
-from typing import List
 
-from volatility_bridge.volatile_models import DashboardStatePayload, DashboardLot
+from src.models import (
+    DashboardLot,
+    DashboardStatePayload,
+    UICommandEmergencyHalt,
+    UICommandLiquidateAll,
+    UICommandMessage,
+    UICommandResumeTrading,
+    UICommandUpdateConfig,
+)
 
 # Setup dashboard log targets
 logger = logging.getLogger("DashboardUI")
 
 class GridDashboardUI:
     @staticmethod
-    def render_multi_lot_chart(time_history: list, price_history: list, open_lots: List[DashboardLot]) -> go.Figure:
+    def render_multi_lot_chart(time_history: list, price_history: list, open_lots: list[DashboardLot]) -> go.Figure:
         fig = go.Figure()
 
         if not time_history or not price_history:
@@ -85,7 +92,7 @@ class GridDashboardUI:
         return fig
 
     @staticmethod
-    def generate_live_order_ledger(open_lots: List[DashboardLot], current_price: float, last_buy_price: float, grid_step: float) -> pd.DataFrame:
+    def generate_live_order_ledger(open_lots: list[DashboardLot], current_price: float, last_buy_price: float, grid_step: float) -> pd.DataFrame:
         ledger_data = []
         next_buy_target = last_buy_price * (1.0 - grid_step)
         dist_to_grid_drop = current_price - next_buy_target
@@ -101,6 +108,63 @@ class GridDashboardUI:
             })
             
         return pd.DataFrame(ledger_data)
+
+
+def send_ui_command(ws, command: UICommandMessage) -> None:
+    """Send a typed UI command to the backend over the active websocket."""
+    ws.send(command.model_dump_json(exclude_none=True))
+
+
+def render_command_controls(container, ws, grid_step: float | None = None) -> None:
+    """Render backend control commands backed by shared bridge models."""
+    with container.container():
+        st.header("Trading Controls")
+
+        if ws is None:
+            st.info("Controls enable after the dashboard connects to the backend websocket.")
+            return
+
+        if st.button("Emergency Halt"):
+            send_ui_command(ws, UICommandEmergencyHalt(command="emergency_halt"))
+            st.success("Emergency halt command sent.")
+
+        if st.button("Resume Trading"):
+            send_ui_command(ws, UICommandResumeTrading(command="resume_trading"))
+            st.success("Resume trading command sent.")
+
+        if st.button("Liquidate All"):
+            send_ui_command(ws, UICommandLiquidateAll(command="liquidate_all"))
+            st.success("Liquidate all command sent.")
+
+        st.subheader("Update Config")
+        default_grid_step = grid_step if grid_step is not None else 0.01
+        new_grid_step = st.number_input(
+            "Grid step",
+            min_value=0.0001,
+            max_value=1.0,
+            value=float(default_grid_step),
+            step=0.0001,
+            format="%.4f",
+        )
+        new_profit_target = st.number_input(
+            "Profit target",
+            min_value=0.0001,
+            max_value=1.0,
+            value=0.01,
+            step=0.0001,
+            format="%.4f",
+        )
+
+        if st.button("Apply Config"):
+            send_ui_command(
+                ws,
+                UICommandUpdateConfig(
+                    command="update_config",
+                    new_grid_step=new_grid_step,
+                    new_profit_target=new_profit_target,
+                ),
+            )
+            st.success("Config update command sent.")
 
 def main():
     st.set_page_config(layout="wide", page_title="AI Volatility Harvester")
@@ -120,6 +184,7 @@ def main():
     
     chart_placeholder = st.empty()
     table_placeholder = st.empty()
+    command_controls = st.sidebar.empty()
 
     time_history = []
     price_history = []
@@ -158,6 +223,8 @@ def main():
             current_price = state.current_price
             open_lots = state.open_lots
             state_timestamp = state.timestamp
+
+            render_command_controls(command_controls, ws, state.grid_step)
 
             if not time_history or time_history[-1] != state_timestamp:
                 time_history.append(state_timestamp)
