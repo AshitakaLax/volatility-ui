@@ -4,6 +4,9 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
+  "runArgs": [
+    "--network=host"
+  ],
   "customizations": {
     "vscode": {
       "settings": {
@@ -18,7 +21,7 @@
   },
   //TODO: Poststart command install alpaca-cli and alpaca bash completion requires Go
   // https://github.com/alpacahq/cli
-  "postCreateCommand": "go install github.com/alpacahq/cli/cmd/alpaca@latest",
+  "postCreateCommand": "go install github.com/alpacahq/cli/cmd/alpaca@latest && pip install .",
   "remoteUser": "root",
   "mounts": [
     "source=${localWorkspaceFolder},target=/workspace,type=bind"

@@ -1,12 +1,17 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Python: Run dashboard_ui.py",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/dashboard_ui.py",
-            "console": "integratedTerminal"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Streamlit",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "streamlit",
+      "args": [
+        "run",
+        "src/dashboard_ui.py"
+      ],
+      "console": "integratedTerminal",
+      //"args": "${command:pickArgs}"
+    },
+  ]
 }

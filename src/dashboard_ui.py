@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from websocket import create_connection, WebSocketTimeoutException, WebSocketConnectionClosedException
 
-from src.models import (
+from models import (
     DashboardLot,
     DashboardStatePayload,
     UICommandEmergencyHalt,
