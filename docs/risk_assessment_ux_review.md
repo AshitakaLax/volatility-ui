@@ -105,15 +105,6 @@ Improve user guidance for:
 
 Each state should explain what is happening and the likely next action.
 
-### 8. Add user-configurable display preferences
-
-Add sidebar controls for:
-
-- Chart interval: 1 minute, 5 minutes, 15 minutes.
-- History window: 1 hour, 1 trading day, full session.
-- Currency formatting precision.
-- Whether to show all lots or only highest-risk lots.
-
 ## Risk-assessment updates that need `volatility-bridge`
 
 The following fields should be added to the shared `volatility-bridge` models. These details are written as implementation-ready requirements for an AI agent working in that repository.
