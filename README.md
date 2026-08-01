@@ -8,6 +8,10 @@ This project uses the [`volatility-bridge`](https://github.com/AshitakaLax/volat
 
 `src.models` intentionally re-exports those shared bridge models for compatibility with any code that still imports from this repository directly.
 
+## Risk and UX review
+
+A detailed review of risk-assessment gaps, user-experience improvements, and implementation-ready `volatility-bridge` contract updates is available in [`docs/risk_assessment_ux_review.md`](docs/risk_assessment_ux_review.md).
+
 ## Running the dashboard
 
 Install the project dependencies, then run the Streamlit UI:
